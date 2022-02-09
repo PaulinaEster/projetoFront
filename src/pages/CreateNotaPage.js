@@ -3,8 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import RNPickerSelect from 'react-native-picker-select';
 import { Formik } from 'formik';
 
-import Cabecalho from "../components/cabecalho";/* 
-import CriarTags from "../components/CriarTags"; */
+import Cabecalho from "../components/cabecalho";
 
 const CreateNotaPage = ({ navigation }) => {
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet, Pressable } from "react-native";
 
+
 const data = {
   notas: [
     {
@@ -30,7 +31,7 @@ const data = {
   ]
 }
 
-const Notas = () => {
+const Notas = ({ notas, navigation }) => {
 
   const nota = ({ item }) => (
     <View style={{
@@ -46,7 +47,7 @@ const Notas = () => {
 
     }}>
       <Pressable
-        onPress={() => console.log(item.name)}
+        onPress={() => navigation.navigate('EditarNota', {nota: item })}
       >
         <Text style={styles.sectionTitle}> {item.name} </Text>
         <Text style={styles.sectionDescription}> {item.descricao} </Text>

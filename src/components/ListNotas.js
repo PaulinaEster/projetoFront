@@ -20,8 +20,7 @@ const ListNotas = ({ navigation }) => {
 
   return (
     <View>
-      {console.log(notas)}
-      {notas == null ? <SemNotas /> : <Notas notas={notas} />}
+      {notas == null ? <SemNotas /> : <Notas notas={notas} navigation={navigation} />}
       
       </View>
   );
