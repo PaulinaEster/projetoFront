@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Pressable, Text, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Cabecalho from "../components/cabecalho";
 import ListNotas from "../components/ListNotas";
@@ -18,6 +19,18 @@ const HomePage = ({ navigation }) => {
     ]
   };
 
+  const [notas, setNotas] = useState({});
+  
+  useEffect(() => {
+    AsyncStorage.getAllKeys(
+      /* faz update de valores  se ja existir substitui se não existir adiciona*/
+      (err, result) => {
+        if (err) console.log(err);
+        else setNotas(result);
+      }
+    )
+  }, []);
+
   return (
     <View>
       <Cabecalho
@@ -25,7 +38,9 @@ const HomePage = ({ navigation }) => {
         botoes={buttonsCabecalho.botoes}
         navigation={navigation}
       />
-      <ListNotas />
+      <View>
+        <ListNotas notas={notas} />
+      </View>
       <View style={styles.buttonCreateNota}> 
         <Pressable
           

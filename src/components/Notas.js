@@ -1,44 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, Pressable } from "react-native";
+import { pegarItem } from '../assets/asyncStorage.utils';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const Notas = ({ item, navigation }) => {
+  const [nota, setNota] = useState({});
 
-const data = {
-  notas: [
-    {
-      name: 'casa',
-      descricao: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at metus nulla. Quisque eleifend fermentum ipsum, et tincidunt purus vestibulum sit amet.Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at metus nulla. Quisque eleifend fermentum ipsum, et tincidunt purus vestibulum sit amet. ',
-      prioridade: 'Baixa',
-      backgroundColor: 'red'
-    },
-    {
-      name: 'Escola',
-      descricao: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.  ',
-      prioridade: 'Alta',
-      backgroundColor: 'green'
-    },
-    {
-      name: 'Escritorio',
-      descricao: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at metus nulla. Quisque eleifend fermentum ipsum, et tincidunt purus vestibulum sit amet.Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at metus nulla. Quisque eleifend fermentum ipsum, et tincidunt purus vestibulum sit amet. ',
-      prioridade: 'Media',
-      backgroundColor: 'blue'
-    },
-    {
-      name: 'despesas',
-      descricao: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at metus nulla. Quisque eleifend fermentum ipsum, et tincidunt purus vestibulum sit amet.Lorem ipsum dolor sit amet, consectetur adipiscing elit. In at metus nulla. Quisque eleifend fermentum ipsum, et tincidunt purus vestibulum sit amet. ',
-      prioridade: 'Alta',
-      backgroundColor: 'green'
-    }
-  ]
-}
+  useEffect(() => {
+    AsyncStorage.getItem(
+      item /* pega item pela chave de identificação */,
+      (err, result) => {
+        if (err) console.log(err);
+        else setNota(JSON.parse(`${result}`))
+      }
+    )
+  }, [])
 
-const Notas = ({ notas, navigation }) => {
-
-  const nota = ({ item }) => (
+  return (
     <View style={{
       width: 180,
       borderWidth: 1,
-      borderColor: item.backgroundColor,
-      backgroundColor: item.backgroundColor,
+      borderColor: nota.cor,
+      backgroundColor: nota.cor,
       padding: 14,
       margin: 4,
       boxSizing: 'border-box',
@@ -47,39 +30,20 @@ const Notas = ({ notas, navigation }) => {
 
     }}>
       <Pressable
-        onPress={() => navigation.navigate('EditarNota', {nota: item })}
+        onPress={() => navigation.navigate('EditarNota')}
       >
-        <Text style={styles.sectionTitle}> {item.name} </Text>
-        <Text style={styles.sectionDescription}> {item.descricao} </Text>
+        <Text style={styles.sectionTitle}> {nota.nome} </Text>
+        { nota.descricao == '' ? null : <Text style={styles.sectionDescription}> {nota.descricao} </Text>}
       </Pressable>
     </View>
-  );
-
-  return (
-    <View style={styles.sectionContainer}>
-      <FlatList
-        numColumns={2}
-        data={data.notas}
-        renderItem={nota}
-      />
-    </View>
+    
   )
 };
 
 export default Notas;
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    position: 'relative',
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "flex-start",
-    padding: 5,
-    overflowY: 'scroll',
-  },
-  sectionNota: {
 
-  },
+const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: '600',

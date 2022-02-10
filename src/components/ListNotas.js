@@ -1,29 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { View /* Pressable, Text, StyleSheet */ } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, Pressable, Text, StyleSheet, FlatList } from "react-native";
 
 import SemNotas from "./SemNotas";
 import Notas from "./Notas";
 
-const ListNotas = ({ navigation }) => {
-  const [notas, setNotas] = useState([]);
+const ListNotas = ({notas, navigation }) => {
 
-  useEffect(() => {
-    AsyncStorage.getAllKeys(
-      /* faz update de valores  se ja existir substitui se não existir adiciona*/
-      (err, result) => {
-        if (err) console.log(err);
-        setNotas(result);
-      }
-    );
-  }, []);
+  const renderItem = ({item}) =>(<Notas item={item} navigation={navigation} />)
 
   return (
     <View>
-      {notas == null ? <SemNotas /> : <Notas notas={notas} navigation={navigation} />}
-      
-      </View>
+      {console.log(JSON.stringify(notas))}
+      {notas == null || notas.length <= 0 ? <SemNotas /> :
+        <View style={styles.sectionContainer}>
+          <FlatList
+            numColumns={2}
+            data={notas}
+            renderItem={renderItem}
+          />
+        </View>
+      }
+
+    </View>
   );
 };
 
 export default ListNotas;
+
+const styles = StyleSheet.create({
+  sectionContainer: {
+    position: 'relative',
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "flex-start",
+    padding: 5,
+    overflowY: 'scroll',
+  }
+});
+
