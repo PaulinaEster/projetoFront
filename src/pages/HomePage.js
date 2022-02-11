@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Pressable, Text, StyleSheet, Alert, Button, TextInput } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from '@react-navigation/native';
 
 import Cabecalho from "../components/cabecalho";
 import ListNotas from "../components/ListNotas";
@@ -24,20 +25,22 @@ const HomePage = ({ route, navigation }) => {
   const [todasNotas, setTodasNotas] = useState(notas);
 
   const pegarNotas = () => {
-    
+    setNotas({});
     AsyncStorage.getAllKeys(
       /* faz update de valores  se ja existir substitui se não existir adiciona*/
       (err, result) => {
-        if (err) ;
+        if (err);
         setNotas(result);
-        
+
       }
     )
   }
 
-  useEffect(() => {
-    pegarNotas()
-  }, [pegarNotas]);
+  useFocusEffect(
+    React.useCallback(() => {
+      pegarNotas();
+    }, [])
+  );
 
   return (
     <View>
@@ -45,7 +48,7 @@ const HomePage = ({ route, navigation }) => {
         title="Notas"
         botoes={buttonsCabecalho.botoes}
         navigation={navigation}
-       
+
       />
       <View>
         <ListNotas notas={notas} />

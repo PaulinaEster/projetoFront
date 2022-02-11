@@ -4,11 +4,13 @@ import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
-const Formulario = ({keyItem, nota }) => {
+const Formulario = ({keyItem }) => {
 
   const [tags, setTags] = useState();
-
+  const [ nota, setNota ] = useState({});
+  
   const navigation = useNavigation(); 
 
   const enviarNota = (nota) => {
@@ -29,10 +31,26 @@ const Formulario = ({keyItem, nota }) => {
       ]  
     )
   }
+  const pegarNota = () => {
+    setNota({});
+    AsyncStorage.getItem(
+      keyItem,
+      (err, result) => {
+        if (err);
+        setNota(result);
+
+      }
+    )
+  }
+  useEffect(()=>{
+    pegarNota();
+  }, [])
 
   return (
     <View>
       <View style={{ padding: 10, backgroundColor: '#F8F8F8' }}>
+        { console.log(nota.nome) }
+        { console.log(nota.nome) }
 
         <Formik
           initialValues={{ nome: nota.nome, descricao: nota.descricao, prioridade: nota.prioridade, data: `${new Date().toLocaleString()}`, cor: '', tags: '' }}
@@ -77,7 +95,7 @@ const Formulario = ({keyItem, nota }) => {
                   style={styles.inputLabel}
                   placeholder={{
                     label: 'Escolha',
-                    value: '',
+                    value: nota.prioridade,
                   }}
                   selectedValue={values.prioridade}
                   onValueChange={handleChange('prioridade')}
@@ -95,7 +113,7 @@ const Formulario = ({keyItem, nota }) => {
                 <RNPickerSelect
 
                   placeholder={{
-                    label: nota.cor,
+                    label: 'Escolha',
                     value: nota.cor,
                   }}
                   selectedValue={values.cor}

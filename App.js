@@ -20,6 +20,7 @@ import {
   Text,
   useColorScheme,
   View,
+  Button
 } from 'react-native';
 
 import HomePage from './src/pages/HomePage';
@@ -35,7 +36,19 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="HomePage" component={HomePage} />
+        <Stack.Screen 
+          name="HomePage" 
+          component={HomePage} 
+          options={({navigation}) => ({
+            
+            headerStyle: {
+              backgroundColor: '#0F62FE',
+            },
+            headerTintColor: '#0F62FE',
+            
+          })}
+        
+        />
         <Stack.Screen name="CriarNota" component={CreateNotaPage} />
         <Stack.Screen name="EditarNota" component={EditarNotasPage} />
         <Stack.Screen name="Detalhes" component={DetalhesNotaPage} />

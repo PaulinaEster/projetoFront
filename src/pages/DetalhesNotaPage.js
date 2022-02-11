@@ -24,7 +24,7 @@ const DetalhesNotaPage = ({ route, navigation }) => {
   )
 
   return (
-    <View >
+    <View style={{padding: 10, backgroundColor: nota.cor}}>
       <View >
         <Pressable  onPress={() => navigation.navigate('EditarNota', { nome: route.params?.nome })} >
           <Text> Editar </Text>
@@ -55,7 +55,7 @@ export default DetalhesNotaPage;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10
+    
   },
   textLabel: {
     fontSize: 18,

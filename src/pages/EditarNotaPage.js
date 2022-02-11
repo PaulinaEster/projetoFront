@@ -21,6 +21,10 @@ const EditarNotasPage = ({ route, navigation }) => {
     )
   }, []);
 
+  const naoApagar = () => {
+    navigation.navigate('HomePage');
+  }
+
   const apagarNota = () =>{
     AsyncStorage.removeItem(
       nome /* faz update de valores  se ja existir substitui se não existir adiciona*/,
@@ -28,6 +32,15 @@ const EditarNotasPage = ({ route, navigation }) => {
         if (err) console.log(err);
         else console.log(result);
       }
+    )
+    Alert.alert(
+      '',
+      'Nota apagada com sucesso!',
+      [
+        {
+          text: 'OK', onPress: navigation.navigate('HomePage')
+        },
+      ]
     )
   }
 
@@ -41,7 +54,7 @@ const EditarNotasPage = ({ route, navigation }) => {
           text: 'Sim', onPress: apagarNota
         },
         {
-          text: 'Não', onPress: navigation.navigate('HomePage')
+          text: 'Não', onPress: naoApagar
         },
       ]
     )

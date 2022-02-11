@@ -27,7 +27,7 @@ const Formulario = ({ notas, navigation }) => {
       [
         {
           text: 'Ver nota',
-          onPress: () => navigation.navigate('EditarNota', { nome }),
+          onPress: () => navigation.navigate('Detalhes', { nome }),
           style: 'cancel',
         },
         { text: 'Voltar', onPress: navigation.navigate('HomePage', { nota }) },
