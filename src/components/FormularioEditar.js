@@ -1,46 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Pressable, Alert } from 'react-native';
 import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from '@react-navigation/native';
 
-import Tags from './tags';
-import { adicionarItem } from '../assets/asyncStorage.utils';
+const Formulario = ({keyItem, nota }) => {
 
-const Formulario = ({notas, navigation }) => {
+  const [tags, setTags] = useState();
 
-  const [tags, setTags] = useState([]);
+  const navigation = useNavigation(); 
 
   const enviarNota = (nota) => {
-    let nome = nota.nome.split(' ').join('');
-    AsyncStorage.setItem(
+    let nome = keyItem;
+    AsyncStorage.mergeItem(
       nome, JSON.stringify(nota),
       (err, result) => {
         if (err) console.log(err);
-        else return console.log("adicionado com sucesso", nota);
+        else return console.log("Editado com sucesso", nota);
       }
     );
 
     Alert.alert(
       '',
-      'Nota criada com sucesso',
-      [  
-        {  
-            text: 'Ver nota',  
-            onPress: () => navigation.navigate('EditarNota', {nome}),  
-            style: 'cancel',  
-        },  
-        {text: 'Voltar', onPress: navigation.navigate('HomePage')},  
-    ]  
+      'Nota editada com sucesso',
+      [ 
+        {text: 'Voltar para notas', onPress: navigation.navigate('HomePage')},  
+      ]  
     )
   }
 
   return (
     <View>
-
       <View style={{ padding: 10, backgroundColor: '#F8F8F8' }}>
+
         <Formik
-          initialValues={{ nome: '', descricao: '', prioridade: '', data: `${new Date().toLocaleString()}`, cor: '', tags: '' }}
+          initialValues={{ nome: nota.nome, descricao: nota.descricao, prioridade: nota.prioridade, data: `${new Date().toLocaleString()}`, cor: '', tags: '' }}
+
           onSubmit={values => {
             if (values.nome == '') return;
             values.tags = tags;

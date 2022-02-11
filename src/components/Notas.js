@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, Pressable } from "react-native";
 import { pegarItem } from '../assets/asyncStorage.utils';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from '@react-navigation/native';
 
-const Notas = ({ item, navigation }) => {
+const Notas = ({ item }) => {
   const [nota, setNota] = useState({});
+  const navigation = useNavigation(); 
 
   useEffect(() => {
     AsyncStorage.getItem(
@@ -30,7 +32,7 @@ const Notas = ({ item, navigation }) => {
 
     }}>
       <Pressable
-        onPress={() => navigation.navigate('EditarNota')}
+        onPress={() => navigation.navigate('EditarNota', { nome: item })}
       >
         <Text style={styles.sectionTitle}> {nota.nome} </Text>
         { nota.descricao == '' ? null : <Text style={styles.sectionDescription}> {nota.descricao} </Text>}
