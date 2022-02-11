@@ -25,6 +25,7 @@ import {
 import HomePage from './src/pages/HomePage';
 import CreateNotaPage from './src/pages/CreateNotaPage';
 import EditarNotasPage from './src/pages/EditarNotaPage';
+import DetalhesNotaPage from './src/pages/DetalhesNotaPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,7 @@ const App = () => {
         <Stack.Screen name="HomePage" component={HomePage} />
         <Stack.Screen name="CriarNota" component={CreateNotaPage} />
         <Stack.Screen name="EditarNota" component={EditarNotasPage} />
+        <Stack.Screen name="Detalhes" component={DetalhesNotaPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Pressable, Text, StyleSheet, FlatList } from "react-native";
+import { View, Pressable, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
 
 import SemNotas from "./SemNotas";
 import Notas from "./Notas";
@@ -17,6 +17,7 @@ const ListNotas = ({notas, navigation }) => {
             numColumns={2}
             data={notas}
             renderItem={renderItem}
+            
           />
         </View>
       }

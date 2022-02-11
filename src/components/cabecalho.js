@@ -12,6 +12,7 @@ const Cabecalho = ({ navigation, title, botoes }) => {
     <View style={styles.container}>
       <View style={styles.containe}>
         <Text style={styles.title}> {title} </Text>
+        
         <View style={styles.icons}>
           <FlatList 
             data={botoes}

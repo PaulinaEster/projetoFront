@@ -25,7 +25,7 @@ const Formulario = ({keyItem, nota }) => {
       '',
       'Nota editada com sucesso',
       [ 
-        {text: 'Voltar para notas', onPress: navigation.navigate('HomePage')},  
+        {text: 'Voltar para notas', onPress: navigation.navigate('HomePage', { nota: nota })},  
       ]  
     )
   }
@@ -95,8 +95,8 @@ const Formulario = ({keyItem, nota }) => {
                 <RNPickerSelect
 
                   placeholder={{
-                    label: 'Escolha',
-                    value: '#F8F8F8',
+                    label: nota.cor,
+                    value: nota.cor,
                   }}
                   selectedValue={values.cor}
                   onValueChange={handleChange('cor')}

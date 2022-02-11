@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Pressable, Text, StyleSheet, Alert, Button } from "react-native";
+import { View, Pressable, Text, StyleSheet, Alert, Button, TextInput } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Cabecalho from "../components/cabecalho";
 import ListNotas from "../components/ListNotas";
+import { pegarTudo } from "../assets/asyncStorage.utils";
 
-const HomePage = ({route, navigation }) => {
+const HomePage = ({ route, navigation }) => {
   const buttonsCabecalho = {
     botoes: [
       {
@@ -19,17 +20,24 @@ const HomePage = ({route, navigation }) => {
     ]
   };
 
-  const [notas, setNotas] = useState({});
+  const [notas, setNotas] = useState();
+  const [todasNotas, setTodasNotas] = useState(notas);
 
-  useEffect(() => {
+  const pegarNotas = () => {
+    
     AsyncStorage.getAllKeys(
       /* faz update de valores  se ja existir substitui se não existir adiciona*/
       (err, result) => {
-        if (err) console.log(err);
-        else setNotas(result);
+        if (err) ;
+        setNotas(result);
+        
       }
     )
-  }, [notas]); 
+  }
+
+  useEffect(() => {
+    pegarNotas()
+  }, [pegarNotas]);
 
   return (
     <View>
@@ -37,11 +45,12 @@ const HomePage = ({route, navigation }) => {
         title="Notas"
         botoes={buttonsCabecalho.botoes}
         navigation={navigation}
+       
       />
       <View>
         <ListNotas notas={notas} />
       </View>
-      <View style={styles.buttonCreateNota}> 
+      <View style={styles.buttonCreateNota}>
         <Pressable
           onPress={() => navigation.navigate("CriarNota")}
         >
@@ -64,7 +73,7 @@ const styles = StyleSheet.create({
     bottom: -580,
     left: 300,
     justifyContent: 'center',
-    alignItems: 'center', 
+    alignItems: 'center',
     flex: 1
   },
   text: {

@@ -32,7 +32,7 @@ const Notas = ({ item }) => {
 
     }}>
       <Pressable
-        onPress={() => navigation.navigate('EditarNota', { nome: item })}
+        onPress={() => navigation.navigate('Detalhes', { nome: item })}
       >
         <Text style={styles.sectionTitle}> {nota.nome} </Text>
         { nota.descricao == '' ? null : <Text style={styles.sectionDescription}> {nota.descricao} </Text>}

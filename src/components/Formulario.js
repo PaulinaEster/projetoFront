@@ -7,10 +7,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Tags from './tags';
 import { adicionarItem } from '../assets/asyncStorage.utils';
 
-const Formulario = ({notas, navigation }) => {
+const Formulario = ({ notas, navigation }) => {
 
   const [tags, setTags] = useState([]);
-
+  const [ colorBorder, setColorBorder ] = useState('#000');
   const enviarNota = (nota) => {
     let nome = nota.nome.split(' ').join('');
     AsyncStorage.setItem(
@@ -24,14 +24,14 @@ const Formulario = ({notas, navigation }) => {
     Alert.alert(
       '',
       'Nota criada com sucesso',
-      [  
-        {  
-            text: 'Ver nota',  
-            onPress: () => navigation.navigate('EditarNota', {nome}),  
-            style: 'cancel',  
-        },  
-        {text: 'Voltar', onPress: navigation.navigate('HomePage')},  
-    ]  
+      [
+        {
+          text: 'Ver nota',
+          onPress: () => navigation.navigate('EditarNota', { nome }),
+          style: 'cancel',
+        },
+        { text: 'Voltar', onPress: navigation.navigate('HomePage', { nota }) },
+      ]
     )
   }
 
@@ -40,9 +40,12 @@ const Formulario = ({notas, navigation }) => {
 
       <View style={{ padding: 10, backgroundColor: '#F8F8F8' }}>
         <Formik
-          initialValues={{ nome: '', descricao: '', prioridade: '', data: `${new Date().toLocaleString()}`, cor: '', tags: '' }}
+          initialValues={{ nome: '', descricao: '', prioridade: '', data: `${new Date().toLocaleString()}`, cor: '#F8F8F8', tags: '' }}
           onSubmit={values => {
-            if (values.nome == '') return;
+            if (values.nome == '') {
+              setColorBorder('red');
+              return;
+            };
             values.tags = tags;
             enviarNota(values);
           }}
@@ -52,7 +55,17 @@ const Formulario = ({notas, navigation }) => {
               <View >
                 <Text style={styles.textLabel}> Nome (Obrigatório) </Text>
                 <TextInput
-                  style={styles.inputLabel}
+                  style={{
+                    marginBottom: 15,
+                    marginTop: 10,
+                    height: 40,
+                    fontSize: 18,
+                    paddingTop: 10,
+                    paddingLeft: 10,
+                    backgroundColor: '#fff',
+                    borderBottomWidth: 0.5,
+                    borderColor: colorBorder
+                  }}
                   onChangeText={handleChange('nome')}
                   onBlur={handleBlur('nome')}
                   value={values.nome}
