@@ -15,22 +15,43 @@ const Formulario = ({keyItem }) => {
 
   const enviarNota = (nota) => {
     let nome = keyItem;
-    AsyncStorage.mergeItem(
-      nome, JSON.stringify(nota),
-      (err, result) => {
-        if (err) console.log(err);
-        else return console.log("Editado com sucesso", nota);
-      }
-    );
+    let nomeAtual = nota.nome.split(' ').join('');
+    if(nome != nomeAtual){
+      AsyncStorage.removeItem(
+        keyItem /* faz update de valores  se ja existir substitui se não existir adiciona*/,
+        (err, result) => {
+          if (err) console.log(err);
+          else console.log(keyItem, ' removido com sucesso!');
+        }
+      )
 
+      AsyncStorage.setItem(
+        nomeAtual /* coloca item */,
+        JSON.stringify(nota),
+        (err, result) => {
+          if (err) console.log(err);
+          else return console.log("adicionado com sucesso", nota);
+        }
+      );
+    }else{
+      AsyncStorage.mergeItem(
+        nome, JSON.stringify(nota),
+        (err, result) => {
+          if (err) console.log(err);
+          else return console.log("Editado com sucesso", nota);
+        }
+      );
+    }
+    
     Alert.alert(
       '',
       'Nota editada com sucesso',
       [ 
-        {text: 'Voltar para notas', onPress: navigation.navigate('HomePage', { nota: nota })},  
+        {text: 'Voltar para notas', onPress: navigation.navigate('HomePage', { nota: nomeAtual })},  
       ]  
     )
   }
+  
   const pegarNota = () => {
     AsyncStorage.getItem(
       keyItem,
@@ -40,6 +61,7 @@ const Formulario = ({keyItem }) => {
       }
     );
   }
+
   useEffect(()=>{
     pegarNota();
   }, [])
@@ -49,11 +71,12 @@ const Formulario = ({keyItem }) => {
       <View style={{ padding: 10, backgroundColor: '#F8F8F8' }}>
 
         <Formik
-          initialValues={{ nome: nota?.nome, descricao: nota?.descricao, prioridade: nota?.prioridade, data: nota?.data , cor: nota?.cor, tags: '' }}
+          initialValues={{ nome: nota.nome, descricao: nota.descricao, prioridade: nota.prioridade, data: nota.data , cor: nota.cor, tags: '' }}
 
           onSubmit={values => {
             if (values.nome == '') return;
             values.tags = tags;
+            values.nome = nota.nome;
             values.data = `${new Date().toLocaleString()}`;
             enviarNota(values);
           }}
@@ -73,6 +96,7 @@ const Formulario = ({keyItem }) => {
               <View >
                 <Text style={styles.textLabel}> Descrição </Text>
                 <TextInput
+                  
                   placeholder={nota.descricao}
                   style={styles.inputLabel}
                   onChangeText={handleChange('descricao')}
@@ -171,5 +195,6 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     backgroundColor: '#fff',
     borderBottomWidth: 0.5,
+    
   }
 })

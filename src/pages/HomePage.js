@@ -7,19 +7,20 @@ import ListNotas from "../components/ListNotas";
 
 const HomePage = ({ route, navigation }) => {
 
-  const [notas, setNotas] = useState();
-  const [ pesquisa, setPesquisa ] = useState();
+  const [keys, setKeys] = useState([]);
+  const [ pesquisa, setPesquisa ] = useState("");
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <View style={{ flexDirection: 'row' }}>
-          <TextInput style={styles.inputText}
+          <TextInput 
+            style={styles.inputText} 
             value={pesquisa}
             onChangeText={setPesquisa}
-            placeholder='Pesquisar'
-            placeholderTextColor="#fff"  
-            underlineColor= '#fff'
+            placeholder='Pesquisar...'
+            placeholderTextColor="#C4C4C4"  
+            underlineColor= '#C4C4C4'
           />
           <Button title="+" color="#fff" onPress={()=> navigation.navigate('CriarNota')} />
         </View>
@@ -27,16 +28,14 @@ const HomePage = ({ route, navigation }) => {
     });
   }, [navigation]);
 
-  const pegarNotas = () => {
-    setNotas({});
-    AsyncStorage.getAllKeys(
-      (err, result) => {
-        if (err);
-        setNotas(result);
-      }
-    )
+  const pegarNotas = async () => {
+    setKeys([]);
+    let keys = await AsyncStorage.getAllKeys();
+    setKeys(keys);
   }
 
+  const filtrarKeys = keys.filter(key => key.toLowerCase().includes(pesquisa.toLowerCase()));
+  
   useFocusEffect(
     React.useCallback(() => {
       pegarNotas();
@@ -46,7 +45,7 @@ const HomePage = ({ route, navigation }) => {
   return (
     <View>
       <View>
-        <ListNotas notas={notas} />
+        <ListNotas notas={filtrarKeys} />
       </View>
       <View style={styles.buttonCreateNota}>
         <Pressable onPress={() => navigation.navigate("CriarNota")}>
