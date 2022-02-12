@@ -38,7 +38,7 @@ const Formulario = ({ notas, navigation }) => {
   return (
     <View>
 
-      <View style={{ padding: 10, backgroundColor: '#F8F8F8' }}>
+      <View>
         <Formik
           initialValues={{ nome: '', descricao: '', prioridade: '', data: `${new Date().toLocaleString()}`, cor: '#F8F8F8', tags: '' }}
           onSubmit={values => {

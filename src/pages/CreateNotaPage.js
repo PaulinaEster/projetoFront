@@ -1,27 +1,13 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 
-import Cabecalho from "../components/cabecalho";
 import Formulario from "../components/Formulario";
 
 const CreateNotaPage = ({ navigation }) => {
 
-  const [teste, setTeste] = useState({});
-
-  const adicionarTarefa = (value)=>{
-    setTeste(value);
-  } 
-
   return (
-    <View>
-      <Cabecalho
-        title="Criar Nota"
-        botoes={[{ para: "HomePage", simbolo: "x" }]}
-        navigation={navigation}
-      />
-      <View>
-        <Formulario navigation={navigation} />
-      </View>
+    <View style={styles.container}>
+      <Formulario navigation={navigation} />
     </View>
   )
 };
@@ -30,7 +16,9 @@ export default CreateNotaPage;
 
 const styles = StyleSheet.create({
   container: {
-    
+    height: '100%',
+    padding: 10, 
+    backgroundColor: '#F8F8F8' 
   },
   textLabel: {
     fontSize: 18,

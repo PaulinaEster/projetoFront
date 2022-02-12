@@ -4,11 +4,11 @@ import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from '@react-navigation/native';
-import { useFocusEffect } from '@react-navigation/native';
 
 const Formulario = ({keyItem }) => {
 
   const [tags, setTags] = useState();
+  const [tag, setTag] = useState('');
   const [ nota, setNota ] = useState({});
   
   const navigation = useNavigation(); 
@@ -32,15 +32,13 @@ const Formulario = ({keyItem }) => {
     )
   }
   const pegarNota = () => {
-    setNota({});
     AsyncStorage.getItem(
       keyItem,
       (err, result) => {
-        if (err);
-        setNota(result);
-
+        if (err) console.log(err);
+        setNota(JSON.parse(`${result}`));
       }
-    )
+    );
   }
   useEffect(()=>{
     pegarNota();
@@ -49,15 +47,14 @@ const Formulario = ({keyItem }) => {
   return (
     <View>
       <View style={{ padding: 10, backgroundColor: '#F8F8F8' }}>
-        { console.log(nota.nome) }
-        { console.log(nota.nome) }
 
         <Formik
-          initialValues={{ nome: nota.nome, descricao: nota.descricao, prioridade: nota.prioridade, data: `${new Date().toLocaleString()}`, cor: '', tags: '' }}
+          initialValues={{ nome: nota?.nome, descricao: nota?.descricao, prioridade: nota?.prioridade, data: nota?.data , cor: nota?.cor, tags: '' }}
 
           onSubmit={values => {
             if (values.nome == '') return;
             values.tags = tags;
+            values.data = `${new Date().toLocaleString()}`;
             enviarNota(values);
           }}
         >
@@ -66,6 +63,7 @@ const Formulario = ({keyItem }) => {
               <View >
                 <Text style={styles.textLabel}> Nome (Obrigatório) </Text>
                 <TextInput
+                  placeholder={nota.nome}
                   style={styles.inputLabel}
                   onChangeText={handleChange('nome')}
                   onBlur={handleBlur('nome')}
@@ -75,6 +73,7 @@ const Formulario = ({keyItem }) => {
               <View >
                 <Text style={styles.textLabel}> Descrição </Text>
                 <TextInput
+                  placeholder={nota.descricao}
                   style={styles.inputLabel}
                   onChangeText={handleChange('descricao')}
                   onBlur={handleBlur('descricao')}
@@ -84,6 +83,8 @@ const Formulario = ({keyItem }) => {
               <View >
                 <Text style={styles.textLabel}> Data </Text>
                 <TextInput
+                  placeholder={nota.data}
+
                   style={styles.inputLabel}
                   onBlur={handleBlur('data')}
                   value={values.data}
@@ -110,8 +111,7 @@ const Formulario = ({keyItem }) => {
               </View>
               <View >
                 <Text style={styles.textLabel}>Cor</Text>
-                <RNPickerSelect
-
+                <RNPickerSelect 
                   placeholder={{
                     label: 'Escolha',
                     value: nota.cor,
@@ -131,6 +131,7 @@ const Formulario = ({keyItem }) => {
               <View>
                 <Text styles={styles.textLabel}> Tags </Text>
                 <TextInput
+                  
                   style={styles.inputLabel}
                   onKeyPress={(e) => e.nativeEvent.key == ' ' ? setTags(values.tags.split(" ")) : false}
                   onChangeText={handleChange('tags')}

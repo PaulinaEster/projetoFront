@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, Pressable } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const DetalhesNotaPage = ({ route, navigation }) => {
+const DetalhesNotaPage = ({ route }) => {
 
   const [nota, setNota] = useState({});
 
@@ -24,28 +24,12 @@ const DetalhesNotaPage = ({ route, navigation }) => {
   )
 
   return (
-    <View style={{padding: 10, backgroundColor: nota.cor}}>
-      <View >
-        <Pressable  onPress={() => navigation.navigate('EditarNota', { nome: route.params?.nome })} >
-          <Text> Editar </Text>
-        </Pressable>
-        <Pressable  onPress={() => navigation.navigate('HomePage')} >
-          <Text> Voltar </Text>
-        </Pressable>
-      </View>
+    <View style={{padding: 10, backgroundColor: nota.cor, height: '100%'}}>
       <View style={styles.container}>
         <Informacoes nome='NOME' conteudo={nota.nome} />
         <Informacoes nome='DESCRIÇÃO' conteudo={nota.descricao}/>
         <Informacoes nome='PRIORIDADE' conteudo={nota.prioridade}/>
-        <View>
-          <Text style={styles.textLabel}> Cor </Text>
-          <Text style={{
-            backgroundColor: nota.cor, width: '100%',
-            fontSize: 18,
-            paddingTop: 10,
-            paddingLeft: 10,
-          }}>  </Text>
-        </View>
+        <Informacoes nome='TAGS' conteudo={nota.tags}/>
       </View>
     </View>
   )
@@ -54,9 +38,6 @@ const DetalhesNotaPage = ({ route, navigation }) => {
 export default DetalhesNotaPage;
 
 const styles = StyleSheet.create({
-  container: {
-    
-  },
   textLabel: {
     fontSize: 18,
     fontWeight: '600',

@@ -1,37 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { View, Pressable, Text, StyleSheet, Alert, Button, TextInput } from "react-native";
+import { View, Pressable, Text, StyleSheet, Button, TextInput } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from '@react-navigation/native';
 
-import Cabecalho from "../components/cabecalho";
 import ListNotas from "../components/ListNotas";
-import { pegarTudo } from "../assets/asyncStorage.utils";
 
 const HomePage = ({ route, navigation }) => {
-  const buttonsCabecalho = {
-    botoes: [
-      {
-        para: "CriarNota",
-        simbolo: "+"
-      },
-      {
-        para: "pesquisar",
-        simbolo: "lupa"
-      }
-    ]
-  };
 
   const [notas, setNotas] = useState();
-  const [todasNotas, setTodasNotas] = useState(notas);
+  const [ pesquisa, setPesquisa ] = useState();
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{ flexDirection: 'row' }}>
+          <TextInput style={styles.inputText}
+            value={pesquisa}
+            onChangeText={setPesquisa}
+            placeholder='Pesquisar'
+            placeholderTextColor="#fff"  
+            underlineColor= '#fff'
+          />
+          <Button title="+" color="#fff" onPress={()=> navigation.navigate('CriarNota')} />
+        </View>
+      ),
+    });
+  }, [navigation]);
 
   const pegarNotas = () => {
     setNotas({});
     AsyncStorage.getAllKeys(
-      /* faz update de valores  se ja existir substitui se não existir adiciona*/
       (err, result) => {
         if (err);
         setNotas(result);
-
       }
     )
   }
@@ -44,19 +45,11 @@ const HomePage = ({ route, navigation }) => {
 
   return (
     <View>
-      <Cabecalho
-        title="Notas"
-        botoes={buttonsCabecalho.botoes}
-        navigation={navigation}
-
-      />
       <View>
         <ListNotas notas={notas} />
       </View>
       <View style={styles.buttonCreateNota}>
-        <Pressable
-          onPress={() => navigation.navigate("CriarNota")}
-        >
+        <Pressable onPress={() => navigation.navigate("CriarNota")}>
           <Text style={styles.text}>+</Text>
         </Pressable>
       </View>
@@ -68,11 +61,11 @@ export default HomePage;
 
 const styles = StyleSheet.create({
   buttonCreateNota: {
+    position: 'absolute',
     width: 40,
     height: 40,
     backgroundColor: "#0F62FE",
     zIndex: 10,
-    position: 'absolute',
     bottom: -580,
     left: 300,
     justifyContent: 'center',
@@ -81,7 +74,17 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 38,
-    color: "#FFFFFF",
-
+    color: "#FFFFFF", 
+  },
+  inputText:{
+    color: '#fff',
+    padding: 5,
+    fontSize: 18,
+    height: 28,
+    width: 150,
+    alignSelf: 'flex-end',
+    borderBottomWidth: 1,
+    borderBottomColor: '#fff',
+    marginRight: 15,
   }
 });
