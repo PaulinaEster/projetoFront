@@ -1,46 +1,50 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Pressable } from 'react-native';
-import { Formik } from 'formik';
-import RNPickerSelect from 'react-native-picker-select';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
-const Tags = ({ navigaton }) => {
-  const [ tag, setTag ] = useState('');
-  const [ tags, setTags ] = useState([]);
+const Tags = ({ tagsString, nome }) => {
+
+  const [tags, setTags] = useState(`${tagsString}`.split(' '));
+  const [numTags, setNumTags] = useState();
+  /* 
+ /*  let auxTag = ;
+  console.log(auxTag)
+  console.log(tagsString);
+  setTags(auxTag);
+ */
+  const pegarTags= ()=> {
+    console.log('a');
+  }
+
+  useEffect(()=>{
+    pegarTags();
+  },[])
+ 
+
+  const renderItem = ({item}) => (<View style={styles.text}><Text>{item}</Text></View>);
 
   return (
-    <View>
-      <Text styles={styles.textLabel}> Tags </Text>
-      <TextInput
-        style={styles.inputLabel}
-        onKeyPress={(e)=> e.nativeEvent.key == ' ' ? setTags(tag.split(" ")) : false }
-        onChangeText={setTag}
-        value={tag}
+    <View >
+       <FlatList 
+        data={tags}
+        numColumns={10}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => `${item}${index}`}
       />
     </View>
   )
-
 }
 
 export default Tags;
 
 const styles = StyleSheet.create({
-  container: {
-
-  },
-  textLabel: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 5,
-    marginTop: 10,
-  },
-  inputLabel: {
-    marginBottom: 15,
-    marginTop: 10,
-    height: 40,
-    fontSize: 18,
-    paddingTop: 10,
-    paddingLeft: 10,
-    backgroundColor: '#fff',
-    borderBottomWidth: 0.5,
+  text: {
+    margin: 5,
+    padding: 15,
+    backgroundColor: '#E0E0E0',
+    borderRightColor: 20,
+    borderColor: '#E0E0E0',
+    borderWidth: 1,
+    borderRadius: 35
   }
-})
+});

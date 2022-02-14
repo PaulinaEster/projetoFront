@@ -6,7 +6,7 @@ import Notas from "./Notas";
 
 const ListNotas = ({notas, navigation }) => {
 
-  const renderItem = ({item}) =>(<Notas item={item} navigation={navigation} />)
+  const renderItem = ({item}) =>(<Notas keyItem={item} navigation={navigation} />)
 
   return (
     <View>

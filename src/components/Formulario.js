@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Pressable, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Pressable, Alert, FlatList } from 'react-native';
 import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import Tags from './tags';
-import { adicionarItem } from '../assets/asyncStorage.utils';
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 const Formulario = ({ notas, navigation }) => {
-
   const [tags, setTags] = useState([]);
-  const [ colorBorder, setColorBorder ] = useState('#000');
+  const [colorBorder, setColorBorder] = useState('#000');
+  const [lista, setLista] = useState([]);
+  const [text, setText] = useState('');
+
+  useEffect(() => {
+    setLista(lista);
+  }, [lista, renderItem, text, adicionarItem, removerItem])
+
   const enviarNota = (nota) => {
     let nome = nota.nome.split(' ').join('');
     AsyncStorage.setItem(
@@ -35,18 +39,56 @@ const Formulario = ({ notas, navigation }) => {
     )
   }
 
+  const renderItem = ({ item }) => (
+    <View style={{ flexDirection: 'row' }}>
+      <BouncyCheckbox
+        style={{ width: '70%' }}
+        size={20}
+        iconStyle={{ borderColor: "#0F62FE", backgroundColor: '#0F62FE' }}
+        text={item}
+        text={item.nome}
+        isChecked={item.valor}
+      />
+      <Button
+        title="x"
+        onPress={e => {
+          let text = item;
+          removerItem(text);
+        }}
+      />
+    </View>
+  )
+
+  const adicionarItem = (text) => {
+    if (text != '') {
+      let obj = { nome: text, valor: false }
+      let auxList = lista;
+      auxList.push(obj);
+      setLista(auxList);
+      setText('');
+    }
+  }
+
+
+  const removerItem = (text) => {
+    let auxList = lista;
+    auxList.splice(auxList.indexOf(text), 1);
+    setLista(auxList);
+  }
+
   return (
     <View>
-
       <View>
         <Formik
-          initialValues={{ nome: '', descricao: '', prioridade: '', data: `${new Date().toLocaleString()}`, cor: '#F8F8F8', tags: '' }}
+          initialValues={{ nome: '', descricao: '', prioridade: '', data: `${new Date().toLocaleString()}`, cor: '#F8F8F8', tags: '', checkList: '' }}
           onSubmit={values => {
             if (values.nome == '') {
               setColorBorder('red');
               return;
             };
+            values.checkList = lista;
             values.tags = tags;
+           /*  console.log(tags) */
             enviarNota(values);
           }}
         >
@@ -110,7 +152,6 @@ const Formulario = ({ notas, navigation }) => {
               <View >
                 <Text style={styles.textLabel}>Cor</Text>
                 <RNPickerSelect
-
                   placeholder={{
                     label: 'Escolha',
                     value: '#F8F8F8',
@@ -131,13 +172,39 @@ const Formulario = ({ notas, navigation }) => {
                 <Text styles={styles.textLabel}> Tags </Text>
                 <TextInput
                   style={styles.inputLabel}
-                  onKeyPress={(e) => e.nativeEvent.key == ' ' ? setTags(values.tags.split(" ")) : false}
+                  onKeyPress={(e) => e.nativeEvent.key == ' ' ? setTags(`${values.tags}`) : false}
                   onChangeText={handleChange('tags')}
                   onBlur={handleBlur('tags')}
                   value={values.tags}
                 />
               </View>
-
+              <View>
+                <Text styles={styles.textLabel}> Check List </Text>
+                <View> 
+                  <FlatList
+                    data={lista}
+                    renderItem={renderItem}
+                    keyExtractor={(item, index) => `item${index}`}
+                  />
+                </View> 
+                <View style={{ flexDirection: 'row' }}>
+                  <TextInput
+                    style={{ width: '70%' }}
+                    value={text}
+                    onChangeText={setText}
+                    placeholder="Novo item..."
+                  /> 
+                  <Button
+                    title='+'
+                    onPress={e => {
+                      if (text != '') {
+                        let item = text;
+                        adicionarItem(item);
+                      }
+                    }}
+                  />
+                </View>
+              </View>
               <Button onPress={handleSubmit} title="Submit" />
 
             </View>
@@ -151,9 +218,6 @@ const Formulario = ({ notas, navigation }) => {
 export default Formulario;
 
 const styles = StyleSheet.create({
-  container: {
-
-  },
   textLabel: {
     fontSize: 18,
     fontWeight: '600',

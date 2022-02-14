@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 
-import Formulario from "../components/Formulario";
+import Formulario from "../components/Formulario"; 
 
 const CreateNotaPage = ({ navigation }) => {
-
   return (
     <View style={styles.container}>
       <Formulario navigation={navigation} />

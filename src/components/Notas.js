@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, Pressable } from "react-native";
-import { pegarItem } from '../assets/asyncStorage.utils';
+import { View, Text, FlatList, StyleSheet, Pressable, Button } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from '@react-navigation/native';
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import CheckBox from './checkBox';
 
-const Notas = ({ item }) => {
+const Notas = ({ keyItem }) => {
   const [nota, setNota] = useState({});
   const navigation = useNavigation(); 
 
   useEffect(() => {
     AsyncStorage.getItem(
-      item /* pega item pela chave de identificação */,
+      keyItem /* pega item pela chave de identificação */,
       (err, result) => {
         if (err) console.log(err);
         else setNota(JSON.parse(`${result}`))
       }
     )
   }, [])
+
+  const renderItem = ({item}) => (<CheckBox item={item} nome={keyItem} />)
 
   return (
     <View style={{
@@ -32,10 +35,20 @@ const Notas = ({ item }) => {
 
     }}>
       <Pressable
-        onPress={() => navigation.navigate('Detalhes', { nome: item })}
+        onPress={() => navigation.navigate('Detalhes', { nome: keyItem })}
       >
         <Text style={styles.sectionTitle}> {nota.nome} </Text>
-        { nota.descricao == '' ? null : <Text style={styles.sectionDescription}> {nota.descricao} </Text>}
+        { nota.descricao == '' ? nota.checkList == '' ? null :
+          <View>
+            <FlatList
+              data={nota.checkList}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => `item${index}`}
+            />
+          </View> 
+        :  <Text style={styles.sectionDescription}> {nota.descricao} </Text> 
+        }
+        
       </Pressable>
     </View>
     

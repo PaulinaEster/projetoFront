@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert } from 'react-native';
 import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from '@react-navigation/native';
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import CheckBox from './checkBox';
 
-const Formulario = ({keyItem }) => {
+const Formulario = ({ keyItem }) => {
 
   const [tags, setTags] = useState();
   const [tag, setTag] = useState('');
-  const [ nota, setNota ] = useState({});
-  
-  const navigation = useNavigation(); 
+  const [nota, setNota] = useState({});
+  const [lista, setLista] = useState([{}]);
+  const [text, setText] = useState('');
+
+  const navigation = useNavigation();
 
   const enviarNota = (nota) => {
     let nome = keyItem;
     let nomeAtual = nota.nome.split(' ').join('');
-    if(nome != nomeAtual){
+    if (nome != nomeAtual) {
       AsyncStorage.removeItem(
         keyItem /* faz update de valores  se ja existir substitui se não existir adiciona*/,
         (err, result) => {
@@ -33,7 +37,7 @@ const Formulario = ({keyItem }) => {
           else return console.log("adicionado com sucesso", nota);
         }
       );
-    }else{
+    } else {
       AsyncStorage.mergeItem(
         nome, JSON.stringify(nota),
         (err, result) => {
@@ -42,132 +46,191 @@ const Formulario = ({keyItem }) => {
         }
       );
     }
-    
+
     Alert.alert(
       '',
       'Nota editada com sucesso',
-      [ 
-        {text: 'Voltar para notas', onPress: navigation.navigate('HomePage', { nota: nomeAtual })},  
-      ]  
+      [
+        { text: 'Voltar para notas', onPress: navigation.navigate('HomePage', { nota: nomeAtual }) },
+      ]
     )
   }
-  
+
   const pegarNota = () => {
     AsyncStorage.getItem(
       keyItem,
       (err, result) => {
         if (err) console.log(err);
         setNota(JSON.parse(`${result}`));
+        setLista(nota.checkList);
       }
     );
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     pegarNota();
-  }, [])
+  }, [lista])
+
+  useEffect(() => {
+    setLista(lista);
+  }, [lista, renderItem, text, adicionarItem, removerItem])
+
+  const renderItem = ({ item }) => (<CheckBox item={item} nome={keyItem} />)
+
+
+  const adicionarItem = (text) => {
+    if (text != '') {
+      let obj = { nome: text, valor: false }
+      let auxList = lista;
+      auxList.push(obj);
+      setLista(auxList);
+      setText('');
+    }
+  }
+
+  const removerItem = (text) => {
+    let auxList = lista;
+    auxList.splice(auxList.indexOf(text), 1);
+    setLista(auxList);
+  }
+
 
   return (
     <View>
       <View style={{ padding: 10, backgroundColor: '#F8F8F8' }}>
 
         <Formik
-          initialValues={{ nome: nota.nome, descricao: nota.descricao, prioridade: nota.prioridade, data: nota.data , cor: nota.cor, tags: '' }}
+          initialValues={{ nome: nota.nome, descricao: nota.descricao, prioridade: nota.prioridade, data: nota.data, cor: nota.cor, tags: '', checkList: '' }}
 
           onSubmit={values => {
             if (values.nome == '') return;
             values.tags = tags;
             values.nome = nota.nome;
+            values.checkList = lista;
             values.data = `${new Date().toLocaleString()}`;
             enviarNota(values);
           }}
         >
-          {({ handleChange, handleBlur, handleSubmit, values }) => (
-            <View>
-              <View >
-                <Text style={styles.textLabel}> Nome (Obrigatório) </Text>
-                <TextInput
-                  placeholder={nota.nome}
-                  style={styles.inputLabel}
-                  onChangeText={handleChange('nome')}
-                  onBlur={handleBlur('nome')}
-                  value={values.nome}
-                />
-              </View>
-              <View >
-                <Text style={styles.textLabel}> Descrição </Text>
-                <TextInput
-                  
-                  placeholder={nota.descricao}
-                  style={styles.inputLabel}
-                  onChangeText={handleChange('descricao')}
-                  onBlur={handleBlur('descricao')}
-                  value={values.descricao}
-                />
-              </View>
-              <View >
-                <Text style={styles.textLabel}> Data </Text>
-                <TextInput
-                  placeholder={nota.data}
+          {({ handleChange, handleBlur, handleSubmit, values }) => {
 
-                  style={styles.inputLabel}
-                  onBlur={handleBlur('data')}
-                  value={values.data}
-                />
-              </View>
-              <View >
-                <Text style={styles.textLabel}> Prioridade</Text>
-                <RNPickerSelect
-                  style={styles.inputLabel}
-                  placeholder={{
-                    label: 'Escolha',
-                    value: nota.prioridade,
-                  }}
-                  selectedValue={values.prioridade}
-                  onValueChange={handleChange('prioridade')}
-                  onBlur={handleBlur("prioridade")}
-                  items={[
-                    { label: 'Urgente', value: 'urgente' },
-                    { label: 'Alta', value: 'alta' },
-                    { label: 'Média', value: 'media' },
-                    { label: 'Baixa', value: 'baixa' },
-                  ]}
-                />
-              </View>
-              <View >
-                <Text style={styles.textLabel}>Cor</Text>
-                <RNPickerSelect 
-                  placeholder={{
-                    label: 'Escolha',
-                    value: nota.cor,
-                  }}
-                  selectedValue={values.cor}
-                  onValueChange={handleChange('cor')}
-                  onBlur={handleBlur("cor")}
 
-                  items={[
-                    { label: 'Branco', value: '#F8F8F8' },
-                    { label: 'Rosa', value: '#FFF3F3' },
-                    { label: 'Azul', value: '#EAF1FF' },
-                    { label: 'Verde-água', value: '#E4FFEF' },
-                  ]}
-                />
-              </View>
+
+
+
+            return (
               <View>
-                <Text styles={styles.textLabel}> Tags </Text>
-                <TextInput
-                  
-                  style={styles.inputLabel}
-                  onKeyPress={(e) => e.nativeEvent.key == ' ' ? setTags(values.tags.split(" ")) : false}
-                  onChangeText={handleChange('tags')}
-                  onBlur={handleBlur('tags')}
-                  value={values.tags}
-                />
+                <View >
+                  <Text style={styles.textLabel}> Nome (Obrigatório) </Text>
+                  <TextInput
+                    placeholder={nota.nome}
+                    style={styles.inputLabel}
+                    onChangeText={handleChange('nome')}
+                    onBlur={handleBlur('nome')}
+                    value={values.nome}
+                  />
+                </View>
+                <View >
+                  <Text style={styles.textLabel}> Descrição </Text>
+                  <TextInput
+
+                    placeholder={nota.descricao}
+                    style={styles.inputLabel}
+                    onChangeText={handleChange('descricao')}
+                    onBlur={handleBlur('descricao')}
+                    value={values.descricao}
+                  />
+                </View>
+                <View >
+                  <Text style={styles.textLabel}> Data </Text>
+                  <TextInput
+                    placeholder={nota.data}
+
+                    style={styles.inputLabel}
+                    onBlur={handleBlur('data')}
+                    value={values.data}
+                  />
+                </View>
+                <View >
+                  <Text style={styles.textLabel}> Prioridade</Text>
+                  <RNPickerSelect
+                    style={styles.inputLabel}
+                    placeholder={{
+                      label: 'Escolha',
+                      value: nota.prioridade,
+                    }}
+                    selectedValue={values.prioridade}
+                    onValueChange={handleChange('prioridade')}
+                    onBlur={handleBlur("prioridade")}
+                    items={[
+                      { label: 'Urgente', value: 'urgente' },
+                      { label: 'Alta', value: 'alta' },
+                      { label: 'Média', value: 'media' },
+                      { label: 'Baixa', value: 'baixa' },
+                    ]}
+                  />
+                </View>
+                <View >
+                  <Text style={styles.textLabel}>Cor</Text>
+                  <RNPickerSelect
+                    placeholder={{
+                      label: 'Escolha',
+                      value: nota.cor,
+                    }}
+                    selectedValue={values.cor}
+                    onValueChange={handleChange('cor')}
+                    onBlur={handleBlur("cor")}
+
+                    items={[
+                      { label: 'Branco', value: '#F8F8F8' },
+                      { label: 'Rosa', value: '#FFF3F3' },
+                      { label: 'Azul', value: '#EAF1FF' },
+                      { label: 'Verde-água', value: '#E4FFEF' },
+                    ]}
+                  />
+                </View>
+                <View>
+                  <Text styles={styles.textLabel}> Tags </Text>
+                  <TextInput
+
+                    style={styles.inputLabel}
+                    onKeyPress={(e) => e.nativeEvent.key == ' ' ? setTags(values.tags.split(" ")) : false}
+                    onChangeText={handleChange('tags')}
+                    onBlur={handleBlur('tags')}
+                    value={values.tags}
+                  />
+                </View>
+                <View>
+                  <Text styles={styles.textLabel}> Check List </Text>
+                  <View>
+                    <FlatList
+                      data={lista}
+                      renderItem={renderItem}
+                      keyExtractor={(item, index) => `item${index}`}
+                    />
+                  </View>
+                  <View style={{ flexDirection: 'row' }}>
+                    <TextInput
+                      style={{ width: '70%' }}
+                      value={text}
+                      onChangeText={setText}
+                      placeholder="Novo item..."
+                    />
+                    <Button
+                      title='+'
+                      onPress={e => {
+                        if (text != '') {
+                          let item = text;
+                          adicionarItem(item);
+                        }
+                      }}
+                    />
+                  </View>
+                </View>
+                <Button onPress={handleSubmit} title="Submit" />
+
               </View>
-
-              <Button onPress={handleSubmit} title="Submit" />
-
-            </View>
-          )}
+            )
+          }}
         </Formik>
       </View>
     </View>
@@ -195,6 +258,6 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     backgroundColor: '#fff',
     borderBottomWidth: 0.5,
-    
+
   }
 })
