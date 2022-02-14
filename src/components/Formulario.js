@@ -16,7 +16,7 @@ const Formulario = ({ notas, navigation }) => {
   }, [lista, renderItem, text, adicionarItem, removerItem])
 
   const enviarNota = (nota) => {
-    let nome = nota.nome.split(' ').join('');
+    let nome = nota.nome.split(' ').join('').toLowerCase();
     adicionarItemAsync(nome, nota);
 
     Alert.alert(

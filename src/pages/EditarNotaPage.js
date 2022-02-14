@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert } from 'react-native';
+import { View,ScrollView, Alert } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import FormularioEditar from '../components/FormularioEditar';
@@ -11,7 +11,7 @@ const EditarNotasPage = ({ route }) => {
 
   useEffect(() => {
     AsyncStorage.getItem(
-      nome /* pega item pela chave de identificação */,
+      nome ,
       (err, result) => {
         if (err) console.log(err);
         else setNota(JSON.parse(`${result}`));
@@ -19,9 +19,10 @@ const EditarNotasPage = ({ route }) => {
     )
   }, []);
 
-  return (<View>
+  return (<ScrollView>
+    { console.log(nota) }
     <FormularioEditar nota={nota} keyItem={nome} />
-  </View>)
+  </ScrollView>)
 }
 
 export default EditarNotasPage;
