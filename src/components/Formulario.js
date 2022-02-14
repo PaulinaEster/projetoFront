@@ -4,9 +4,9 @@ import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { adicionarItemAsync } from '../assets/asyncStorage.utils';
 
 const Formulario = ({ notas, navigation }) => {
-  const [tags, setTags] = useState([]);
   const [colorBorder, setColorBorder] = useState('#000');
   const [lista, setLista] = useState([]);
   const [text, setText] = useState('');
@@ -17,13 +17,7 @@ const Formulario = ({ notas, navigation }) => {
 
   const enviarNota = (nota) => {
     let nome = nota.nome.split(' ').join('');
-    AsyncStorage.setItem(
-      nome, JSON.stringify(nota),
-      (err, result) => {
-        if (err) console.log(err);
-        else return console.log("adicionado com sucesso", nota);
-      }
-    );
+    adicionarItemAsync(nome, nota);
 
     Alert.alert(
       '',
@@ -49,13 +43,7 @@ const Formulario = ({ notas, navigation }) => {
         text={item.nome}
         isChecked={item.valor}
       />
-      <Button
-        title="x"
-        onPress={e => {
-          let text = item;
-          removerItem(text);
-        }}
-      />
+      <Button title="x" onPress={e => { let text = item; removerItem(text);}} />
     </View>
   )
 
@@ -69,7 +57,6 @@ const Formulario = ({ notas, navigation }) => {
     }
   }
 
-
   const removerItem = (text) => {
     let auxList = lista;
     auxList.splice(auxList.indexOf(text), 1);
@@ -80,15 +67,13 @@ const Formulario = ({ notas, navigation }) => {
     <View>
       <View>
         <Formik
-          initialValues={{ nome: '', descricao: '', prioridade: '', data: `${new Date().toLocaleString()}`, cor: '#F8F8F8', tags: '', checkList: '' }}
+          initialValues={{ nome: '', descricao: '', prioridade: '', data: `${new Date().toLocaleString()}`, cor: '#F8F8F8', tags: '', checkList: [] }}
           onSubmit={values => {
             if (values.nome == '') {
               setColorBorder('red');
               return;
             };
             values.checkList = lista;
-            values.tags = tags;
-           /*  console.log(tags) */
             enviarNota(values);
           }}
         >
@@ -158,8 +143,7 @@ const Formulario = ({ notas, navigation }) => {
                   }}
                   selectedValue={values.cor}
                   onValueChange={handleChange('cor')}
-                  onBlur={handleBlur("cor")}
-
+                  onBlur={handleBlur("cor")} 
                   items={[
                     { label: 'Branco', value: '#F8F8F8' },
                     { label: 'Rosa', value: '#FFF3F3' },
@@ -170,9 +154,9 @@ const Formulario = ({ notas, navigation }) => {
               </View>
               <View>
                 <Text styles={styles.textLabel}> Tags </Text>
+
                 <TextInput
                   style={styles.inputLabel}
-                  onKeyPress={(e) => e.nativeEvent.key == ' ' ? setTags(`${values.tags}`) : false}
                   onChangeText={handleChange('tags')}
                   onBlur={handleBlur('tags')}
                   value={values.tags}
@@ -205,15 +189,14 @@ const Formulario = ({ notas, navigation }) => {
                   />
                 </View>
               </View>
-              <Button onPress={handleSubmit} title="Submit" />
-
+              <Button onPress={handleSubmit} title="Submit" /> 
             </View>
           )}
         </Formik>
       </View>
     </View>
   )
-}
+};
 
 export default Formulario;
 
@@ -234,4 +217,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: 0.5,
   }
-})
+});

@@ -1,72 +1,52 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const adicionarItem = async (keyItem, item) => {
-  try {
-    await AsyncStorage.setItem(
-      keyItem /* coloca item */,
-      JSON.stringify(item),
-      (err, result) => {
-        if (err) console.log(err);
-        else return console.log("adicionado com sucesso", item);
-      }
-    );
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-const pegarItem = async (keyItem) => {
-  try {
-    const data = await AsyncStorage.getItem(
-      keyItem /* pega item pela chave de identificação */,
-      (err, result) => {
-        if (err) console.log(err);
-        else return result;
-      }
-    )
-    if (data !== null) {
-      console.log(data);
-      return data;
+const adicionarItemAsync = async (keyItem, item) => {
+  await AsyncStorage.setItem(
+    keyItem,
+    JSON.stringify(item),
+    (err, result) => {
+      if (err) console.log(err);
+      else return console.log("adicionado com sucesso", item);
     }
-  } catch (error) {
-    console.log(error);
-  }
+  )
 }
 
-const atualizarItem = async (keyItemAtual, novoItem) => {
-  try {
-    const data = await AsyncStorage.mergeItem(
-      keyItemAtual /* faz update de valores  se ja existir substitui se não existir adiciona*/,
-      JSON.stringify(novoItem),
-      (err, result) => {
-        if (err) console.log(err);
-        else return result;
-      }
-    )
-    if (data !== null) {
-      console.log(data);
-      return data;
+const pegarItemAsync = async (keyItem) => {
+  const data = await AsyncStorage.getItem(
+    keyItem /* pega item pela chave de identificação */,
+    (err, result) => {
+      if (err) console.log(err);
+      else return result;
     }
-  } catch (error) {
-    console.log(error);
+  )
+  if (data !== null) {
+    console.log(data);
+    return data;
   }
 }
 
-const removerItem = async (keyItem) => {
-  try {
-    await AsyncStorage.removeItem(
-      keyItem /* faz update de valores  se ja existir substitui se não existir adiciona*/,
-      (err, result) => {
-        if (err) console.log(err);
-        else console.log(result);
-      }
-    );
-  } catch (error) {
-    console.log(error);
-  }
+const atualizarItemAsync = async (keyItem, novoItem) => {
+  await AsyncStorage.mergeItem(
+    keyItem,
+    JSON.stringify(novoItem),
+    (err, result) => {
+      if (err) console.log(err);
+      else console.log('editado! ');
+    }
+  )
 }
 
-const pegarTudo = async () => {
+const removerItemAsync = async (keyItem) => {
+  await AsyncStorage.removeItem(
+    keyItem,
+    (err, result) => {
+      if (err) console.log(err);
+      else console.log('removido');
+    }
+  )
+}
+
+const pegarTudoAsync = async () => {
   try {
     const data = await AsyncStorage.getAllKeys(
       /* faz update de valores  se ja existir substitui se não existir adiciona*/
@@ -84,22 +64,17 @@ const pegarTudo = async () => {
   }
 };
 
-const removerTudo = async () => {
-  try {
-    const data = await AsyncStorage.clear(
-      /* faz update de valores  se ja existir substitui se não existir adiciona*/
-      (err, result) => {
-        if (err) console.log(err);
-        else return result;
-      }
-    );
-    if (data !== null) {
-      console.log(data);
-      return data;
+const removerTudoAsync = async () => {
+  const data = await AsyncStorage.clear(
+    (err, result) => {
+      if (err) console.log(err);
+      else return result;
     }
-  } catch (error) {
-    console.log(error);
+  );
+  if (data !== null) {
+    console.log(data);
+    return data;
   }
 }
 
-export { adicionarItem, pegarItem, atualizarItem, pegarTudo, removerItem, removerTudo };
+export { adicionarItemAsync, pegarItemAsync, atualizarItemAsync, pegarTudoAsync, removerItemAsync, removerTudoAsync };

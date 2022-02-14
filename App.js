@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StyleSheet, Text, TextInput, View, Button, Alert } from 'react-native';
-
+import { removerItemAsync } from './src/assets/asyncStorage.utils';
 import HomePage from './src/pages/HomePage';
 import CreateNotaPage from './src/pages/CreateNotaPage';
 import EditarNotasPage from './src/pages/EditarNotaPage';
@@ -27,13 +27,7 @@ const App = () => {
   }
 
   const apagarNota = (nome, navigation) => {
-    AsyncStorage.removeItem(
-      nome,
-      (err, result) => {
-        if (err) console.log(err);
-        else console.log(result);
-      }
-    )
+    removerItemAsync(nome);
     Alert.alert(
       '',
       'Nota apagada com sucesso!',
@@ -72,7 +66,7 @@ const App = () => {
             headerTintColor: '#0F62FE', 
             headerRight: () => (
               <View style={{ flexDirection: 'row' }}>
-                <Botao navigation={navigation} title="Voltar" color="#fff" para='Detalhes'/>
+                <Botao navigation={navigation} title="Voltar" color="#fff" para='Detalhes' nome={route.params?.nome}/>
                 <Button onPress={() => aviso(route.params?.nome, navigation)} title="Apagar" color="#fff" />
               </View>
             ),

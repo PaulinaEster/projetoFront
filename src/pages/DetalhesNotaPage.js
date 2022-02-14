@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, FlatList } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import CheckBox from '../components/checkBox';
-import Tags from '../components/tags';
 
 const DetalhesNotaPage = ({ route }) => {
 

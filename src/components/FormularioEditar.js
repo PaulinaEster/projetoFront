@@ -2,81 +2,67 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert } from 'react-native';
 import { Formik } from 'formik';
 import RNPickerSelect from 'react-native-picker-select';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from '@react-navigation/native';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import CheckBox from './checkBox';
+import { removerItemAsync, pegarItemAsync, adicionarItemAsync, atualizarItemAsync } from '../assets/asyncStorage.utils';
 
 const Formulario = ({ keyItem }) => {
 
-  const [tags, setTags] = useState();
-  const [tag, setTag] = useState('');
   const [nota, setNota] = useState({});
   const [lista, setLista] = useState([{}]);
   const [text, setText] = useState('');
 
   const navigation = useNavigation();
 
-  const enviarNota = (nota) => {
-    let nome = keyItem;
-    let nomeAtual = nota.nome.split(' ').join('');
-    if (nome != nomeAtual) {
-      AsyncStorage.removeItem(
-        keyItem /* faz update de valores  se ja existir substitui se não existir adiciona*/,
-        (err, result) => {
-          if (err) console.log(err);
-          else console.log(keyItem, ' removido com sucesso!');
-        }
-      )
+  useEffect(() => {
+    pegarNota();
+    setLista();
+  }, [lista, renderItem, text, adicionarItem, removerItem])
 
-      AsyncStorage.setItem(
-        nomeAtual /* coloca item */,
-        JSON.stringify(nota),
-        (err, result) => {
-          if (err) console.log(err);
-          else return console.log("adicionado com sucesso", nota);
-        }
-      );
+  const verificaValores = (notaAtual, nomeAtual) => {
+    if(notaAtual.nome == '') notaAtual.nome = nota.nome;
+    if(notaAtual.descricao == '') notaAtual.descricao = nota.descricao;
+    if(notaAtual.prioridade == '') notaAtual.prioridade = nota.prioridade;
+    if(notaAtual.cor == '') notaAtual.cor = nota.cor;
+    if(notaAtual.tags == '') notaAtual.tags = nota.tags;
+    if(notaAtual.checkList == null) notaAtual.checkList = nota.checkList;
+    enviarNota(notaAtual, nomeAtual);
+  }
+
+  const enviarNota = (notaAtual, nomeAtual) => {
+    if (keyItem != nomeAtual) {
+      removerItemAsync(keyItem);
+      adicionarItemAsync(nomeAtual, notaAtual);
     } else {
-      AsyncStorage.mergeItem(
-        nome, JSON.stringify(nota),
-        (err, result) => {
-          if (err) console.log(err);
-          else return console.log("Editado com sucesso", nota);
-        }
-      );
+      atualizarItemAsync(keyItem, notaAtual);
     }
 
     Alert.alert(
       '',
       'Nota editada com sucesso',
-      [
-        { text: 'Voltar para notas', onPress: navigation.navigate('HomePage', { nota: nomeAtual }) },
-      ]
+      [{ text: 'Voltar para notas', onPress: navigation.navigate('HomePage', { nota: nomeAtual })}]
     )
   }
 
   const pegarNota = () => {
-    AsyncStorage.getItem(
-      keyItem,
-      (err, result) => {
-        if (err) console.log(err);
-        setNota(JSON.parse(`${result}`));
-        setLista(nota.checkList);
-      }
-    );
+    let data = pegarItemAsync(keyItem);
+    setNota(data);
+    setLista(data.checkList);
   }
 
-  useEffect(() => {
-    pegarNota();
-  }, [lista])
-
-  useEffect(() => {
-    setLista(lista);
-  }, [lista, renderItem, text, adicionarItem, removerItem])
-
-  const renderItem = ({ item }) => (<CheckBox item={item} nome={keyItem} />)
-
+  const renderItem = ({ item }) => (
+    <View style={{flexDirection:'row'}}>
+      <BouncyCheckbox
+        style={{ width: '70%' }}
+        size={20}
+        iconStyle={{ borderColor: "#0F62FE", backgroundColor: '#0F62FE' }}
+        text={item}
+        text={item.nome}
+        isChecked={item.valor}
+      />
+      <Button title="x" onPress={e => { let text = item; removerItem(text); }} />
+    </View>
+  )
 
   const adicionarItem = (text) => {
     if (text != '') {
@@ -94,29 +80,17 @@ const Formulario = ({ keyItem }) => {
     setLista(auxList);
   }
 
-
   return (
     <View>
       <View style={{ padding: 10, backgroundColor: '#F8F8F8' }}>
-
         <Formik
-          initialValues={{ nome: nota.nome, descricao: nota.descricao, prioridade: nota.prioridade, data: nota.data, cor: nota.cor, tags: '', checkList: '' }}
-
+          initialValues={nota}
           onSubmit={values => {
-            if (values.nome == '') return;
-            values.tags = tags;
-            values.nome = nota.nome;
-            values.checkList = lista;
-            values.data = `${new Date().toLocaleString()}`;
-            enviarNota(values);
+            let nome = `${values.nome}`.split('').join('');
+            verificaValores(values, nome);
           }}
         >
           {({ handleChange, handleBlur, handleSubmit, values }) => {
-
-
-
-
-
             return (
               <View>
                 <View >
@@ -131,8 +105,7 @@ const Formulario = ({ keyItem }) => {
                 </View>
                 <View >
                   <Text style={styles.textLabel}> Descrição </Text>
-                  <TextInput
-
+                  <TextInput 
                     placeholder={nota.descricao}
                     style={styles.inputLabel}
                     onChangeText={handleChange('descricao')}
@@ -144,7 +117,6 @@ const Formulario = ({ keyItem }) => {
                   <Text style={styles.textLabel}> Data </Text>
                   <TextInput
                     placeholder={nota.data}
-
                     style={styles.inputLabel}
                     onBlur={handleBlur('data')}
                     value={values.data}
@@ -179,7 +151,6 @@ const Formulario = ({ keyItem }) => {
                     selectedValue={values.cor}
                     onValueChange={handleChange('cor')}
                     onBlur={handleBlur("cor")}
-
                     items={[
                       { label: 'Branco', value: '#F8F8F8' },
                       { label: 'Rosa', value: '#FFF3F3' },
@@ -191,9 +162,7 @@ const Formulario = ({ keyItem }) => {
                 <View>
                   <Text styles={styles.textLabel}> Tags </Text>
                   <TextInput
-
                     style={styles.inputLabel}
-                    onKeyPress={(e) => e.nativeEvent.key == ' ' ? setTags(values.tags.split(" ")) : false}
                     onChangeText={handleChange('tags')}
                     onBlur={handleBlur('tags')}
                     value={values.tags}
@@ -205,7 +174,7 @@ const Formulario = ({ keyItem }) => {
                     <FlatList
                       data={lista}
                       renderItem={renderItem}
-                      keyExtractor={(item, index) => `item${index}`}
+                      keyExtractor={(item, index) => `${item}${index}`}
                     />
                   </View>
                   <View style={{ flexDirection: 'row' }}>
@@ -227,7 +196,6 @@ const Formulario = ({ keyItem }) => {
                   </View>
                 </View>
                 <Button onPress={handleSubmit} title="Submit" />
-
               </View>
             )
           }}
@@ -235,14 +203,11 @@ const Formulario = ({ keyItem }) => {
       </View>
     </View>
   )
-}
+};
 
 export default Formulario;
 
 const styles = StyleSheet.create({
-  container: {
-
-  },
   textLabel: {
     fontSize: 18,
     fontWeight: '600',
@@ -260,4 +225,4 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
 
   }
-})
+});
