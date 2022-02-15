@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View,ScrollView, Alert } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import FormularioEditar from '../components/FormularioEditar';
@@ -20,8 +20,8 @@ const EditarNotasPage = ({ route }) => {
   }, []);
 
   return (<ScrollView>
-    { console.log(nota) }
-    <FormularioEditar nota={nota} keyItem={nome} />
+    
+    <FormularioEditar keyItem={nome} />
   </ScrollView>)
 }
 
